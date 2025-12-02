@@ -1,0 +1,71 @@
+CAMERA:
+  IR:
+    FPS: 9
+    RES: [160, 120]
+    SLEEP: 0.11
+    TAU: 0.95
+    FIRE_DETECTION: true
+    FIRE_MIN_TEMP: 80
+    FIRE_THR: 20
+    FIRE_RAW_THR: 5
+    DEVICE: "/dev/video0"        # USB IR 카메라 경로 (필요 시 조정)
+  RGB_FRONT:
+    FPS: 30
+    RES: [1280, 720]
+    SLEEP: 0.033
+    DEVICE: "/dev/video2"        # 고해상도 웹캠 경로
+
+TARGET_RES: [960, 540]
+MODEL: ./model/8n_640_v2/best_full_integer_quant.tflite
+LABEL: ./model/labels.txt
+DELEGATE: ""                   # PC에서는 CPU로 실행
+
+INPUT:
+  RGB:
+    MODE: live
+    VIDEO_PATH: ""
+    LOOP: true
+    FRAME_INTERVAL_MS: null
+    COLOR: [0, 255, 0]
+    DEVICE: "/dev/video2"
+  IR:
+    MODE: live
+    VIDEO_PATH: ""
+    LOOP: true
+    FRAME_INTERVAL_MS: null
+    DEVICE: "/dev/video0"
+
+STATE:
+  FIRE: {NMS: 0.1, WINDOW: 50, THRESHOLD: 60, CONFIDENCE: 0.2, MIN_DUR: 10.0, ACTIVE_DUR: 2.0,
+    INACTIVE_DUR: 10.0, DET_MODE: 1}
+  BUFFERS: {RAW16: 100, RAW: 50, DET: 100}
+  DET_SLEEP: 0.11
+
+SERVER:
+  IP: '127.0.0.1'
+  PORT: 9999
+  COMP_RATIO: 70
+
+DISPLAY:
+  ENABLED: true
+  WINDOW_NAME: "Vision AI Display"
+
+SYNC:
+  ENABLED: false
+  MAX_DIFF_MS: 120
+
+CAPTURE:
+  OUTPUT_DIR: "./capture_session_pc"
+  DURATION_SEC: null
+  MAX_FRAMES: null
+  MAX_DIFF_MS: 80
+  SAVE_RGB_VIDEO: true
+  SAVE_IR_VIDEO: true
+  SAVE_IR_RAW16: true
+  RGB_CODEC: "mp4v"
+  IR_CODEC: "mp4v"
+
+COORD:
+  OFFSET_X: 0.0
+  OFFSET_Y: 0.0
+  SCALE: null

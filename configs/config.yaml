@@ -1,0 +1,67 @@
+CAMERA:
+  IR:
+    FPS: 9
+    RES: [160, 120]
+    SLEEP: 0.11
+    TAU: 0.95               # 대기 투과율 (실내: 0.95, 야외장거리: 0.3~0.7)
+    FIRE_DETECTION: true     # 화점 탐지 활성화
+    FIRE_MIN_TEMP: 80        # 화점 최소 온도 (섭씨)
+    FIRE_THR: 20             # 보정 온도 임계값 (최고-평균)
+    FIRE_RAW_THR: 5          # raw 온도 임계값 (최고-평균)
+    DEVICE: "/dev/video5"
+  RGB_FRONT:
+    FPS: 30
+    RES: [1920, 1080]
+    SLEEP: 0.033
+    DEVICE: "/dev/video3"
+  RGB_PC:
+    FPS: 30
+    RES: [1280, 720]
+    SLEEP: 0.033
+    DEVICE: 0
+TARGET_RES: [960, 540]
+MODEL: /root/vision-ai-nxp/model/8n_640_v2/best_full_integer_quant.tflite
+LABEL: /root/vision-ai-nxp/model/labels.txt
+DELEGATE: "/usr/lib/libvx_delegate.so" 
+INPUT:
+  RGB:
+    MODE: live          # live | video | mock
+    VIDEO_PATH: ""      # 영상 파일 경로 또는 배열
+    LOOP: true
+    FRAME_INTERVAL_MS: null
+    COLOR: [0, 255, 0]
+    DEVICE: null        # PC에서 내장 웹캠 사용 시 인덱스 입력 (예: 0)
+  IR:
+    MODE: live
+    VIDEO_PATH: ""
+    LOOP: true
+    FRAME_INTERVAL_MS: null
+STATE:
+  FIRE: {NMS: 0.1, WINDOW: 50, THRESHOLD: 60, CONFIDENCE: 0.2, MIN_DUR: 10.0, ACTIVE_DUR: 2.0,
+    INACTIVE_DUR: 10.0, DET_MODE: 1}
+  BUFFERS: {RAW16: 100, RAW: 50, DET: 100}
+  DET_SLEEP: 0.11
+SERVER:
+  IP: '192.168.10.1'
+  PORT: 9999
+  COMP_RATIO: 70
+DISPLAY:
+  ENABLED: false
+  WINDOW_NAME: "Vision AI Display"
+SYNC:
+  ENABLED: false
+  MAX_DIFF_MS: 120
+CAPTURE:
+  OUTPUT_DIR: "./capture_session"
+  DURATION_SEC: null
+  MAX_FRAMES: null
+  MAX_DIFF_MS: 80
+  SAVE_RGB_VIDEO: true
+  SAVE_IR_VIDEO: true
+  SAVE_IR_RAW16: true
+  RGB_CODEC: "mp4v"
+  IR_CODEC: "mp4v"
+COORD:
+  OFFSET_X: 0.0
+  OFFSET_Y: 0.0
+  SCALE: null

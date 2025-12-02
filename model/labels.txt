@@ -1,0 +1,8 @@
+smoke
+fire
+cloud
+fog
+light
+sunlight
+swaying_object
+swaying_leaves
