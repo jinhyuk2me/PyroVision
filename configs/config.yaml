@@ -8,20 +8,20 @@ CAMERA:
     FIRE_MIN_TEMP: 80        # 화점 최소 온도 (섭씨)
     FIRE_THR: 20             # 보정 온도 임계값 (최고-평균)
     FIRE_RAW_THR: 5          # raw 온도 임계값 (최고-평균)
-    DEVICE: "/dev/video5"
+    DEVICE: "/dev/video3"
   RGB_FRONT:
     FPS: 30
     RES: [1920, 1080]
     SLEEP: 0.033
-    DEVICE: "/dev/video3"
+    DEVICE: "/dev/video5"
   RGB_PC:
     FPS: 30
     RES: [1280, 720]
     SLEEP: 0.033
     DEVICE: 0
 TARGET_RES: [960, 540]
-MODEL: /root/vision-ai-nxp/model/8n_640_v2/best_full_integer_quant.tflite
-LABEL: /root/vision-ai-nxp/model/labels.txt
+MODEL: /root/lk_fire/model/8n_640_v2/best_full_integer_quant.tflite
+LABEL: /root/lk_fire/model/labels.txt
 DELEGATE: "/usr/lib/libvx_delegate.so" 
 INPUT:
   RGB:
