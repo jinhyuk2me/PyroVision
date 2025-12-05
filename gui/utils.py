@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 from PyQt6.QtGui import QImage, QPixmap
 
+from core.coord_mapper import CoordMapper
+
 logger = logging.getLogger(__name__)
 
 

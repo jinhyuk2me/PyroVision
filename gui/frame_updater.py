@@ -1,41 +1,56 @@
 import logging
 import time
 from collections import deque
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Callable
 
 import cv2
+from PyQt6.QtCore import Qt
 
 from core.coord_mapper import CoordMapper
 from core.fire_fusion import prepare_fusion_for_output
 from core.state import DEFAULT_LABEL_SCALE
 from core.util import ts_to_epoch_ms
 from gui.utils import cv_to_qpixmap, calc_fps, build_overlay
+from gui.constants import FPS_HISTORY_SIZE
 
 
 logger = logging.getLogger(__name__)
 
 
 class FrameUpdater:
-    def __init__(self, buffers, controller, config, labels, plots, sync_cfg):
+    def __init__(
+        self,
+        buffers: Dict[str, Any],
+        controller: Optional[Any],
+        config: Any,
+        labels: Dict[str, Any],
+        plots: Optional[Dict[str, Any]],
+        sync_cfg: Optional[Dict[str, Any]]
+    ) -> None:
         self.buffers = buffers
         self.controller = controller
         self.config = config
         self.labels = labels
         self.plots = plots or {}
         self.sync_cfg = sync_cfg or {}
-        self.rgb_ts_history = deque(maxlen=60)
-        self.det_ts_history = deque(maxlen=60)
-        self.ir_ts_history = deque(maxlen=60)
-        self._last_det_ts = None
-        self._coord_auto_set = False
+        self.rgb_ts_history = deque(maxlen=FPS_HISTORY_SIZE)
+        self.det_ts_history = deque(maxlen=FPS_HISTORY_SIZE)
+        self.ir_ts_history = deque(maxlen=FPS_HISTORY_SIZE)
+        self._last_det_ts: Optional[str] = None
+        self._coord_auto_set: bool = False
         self.ir_size = tuple(self.controller.ir_cfg.get('RES', (160, 120))) if self.controller else (160, 120)
         self.rgb_size = tuple(getattr(self.config, "TARGET_RES", (960, 540)))
-        self.fire_fusion = None
+        self.fire_fusion: Optional[Any] = None
+        self.coord_sync_cb: Optional[Callable] = None
 
-    def set_fire_fusion(self, fusion):
+    def set_fire_fusion(self, fusion: Optional[Any]) -> None:
         self.fire_fusion = fusion
 
-    def update_frames(self):
+    def set_coord_sync_handler(self, callback: Optional[Callable]) -> None:
+        """자동 스케일 계산 시 UI를 갱신하기 위한 콜백"""
+        self.coord_sync_cb = callback
+
+    def update_frames(self) -> None:
         det_item = self.buffers['rgb_det'].read()
         rgb_item = self.buffers['rgb'].read()
         ir_item = self.buffers['ir'].read()
@@ -75,8 +90,10 @@ class FrameUpdater:
                         self.controller.set_coord_cfg(updated)
                         self._coord_auto_set = True
                         logger.info("Coord scale auto-set: %.3f", auto_scale)
-                except Exception:
-                    pass
+                        if self.coord_sync_cb:
+                            self.coord_sync_cb(updated)
+                except Exception as e:
+                    logger.debug("Auto-scale calculation failed: %s", e, exc_info=True)
 
         vis_mode = getattr(self, "fusion_vis_mode", "test")
         annotated_det = det_frame.copy() if det_frame is not None else None
@@ -86,8 +103,10 @@ class FrameUpdater:
             pix = cv_to_qpixmap(rgb_frame)
             if pix:
                 self.labels['rgb_label'].setPixmap(pix.scaled(
-                    self.labels['rgb_label'].size(), self.labels['rgb_label'].aspectRatioMode(),
-                    self.labels['rgb_label'].transformationMode()))
+                    self.labels['rgb_label'].size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                ))
             rgb_dev = "-"
             if self.controller:
                 rgb_cfg, _ = self.controller.get_input_cfg()
@@ -102,8 +121,10 @@ class FrameUpdater:
             pix = cv_to_qpixmap(ir_frame)
             if pix:
                 self.labels['ir_label'].setPixmap(pix.scaled(
-                    self.labels['ir_label'].size(), self.labels['ir_label'].aspectRatioMode(),
-                    self.labels['ir_label'].transformationMode()))
+                    self.labels['ir_label'].size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                ))
             ir_dev = "-"
             if self.controller:
                 _, ir_cfg = self.controller.get_input_cfg()
@@ -147,14 +168,36 @@ class FrameUpdater:
                     f"ir_hotspot={len(ir_hotspots)} | eo={len(eo_bboxes)}"
                 )
 
+        # Detection view 업데이트 (Fusion 후 결과 사용)
+        if annotated_det is not None and self.labels.get('det_label'):
+            pix = cv_to_qpixmap(annotated_det)
+            if pix:
+                self.labels['det_label'].setPixmap(pix.scaled(
+                    self.labels['det_label'].size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                ))
+            model_name = getattr(self.config, "MODEL", "-") if self.config else "-"
+            if self.labels.get('det_info'):
+                self.labels['det_info'].setText(
+                    f"Det {annotated_det.shape[1]}x{annotated_det.shape[0]} | det={det_count} | model={model_name}"
+                )
+
         # Overlay
         overlay_frame = build_overlay(rgb_frame, ir_frame, self.controller.get_coord_cfg() if self.controller else {})
         if overlay_frame is not None and self.labels.get('overlay_label'):
             pix = cv_to_qpixmap(overlay_frame)
             if pix:
                 self.labels['overlay_label'].setPixmap(pix.scaled(
-                    self.labels['overlay_label'].size(), self.labels['overlay_label'].aspectRatioMode(),
-                    self.labels['overlay_label'].transformationMode()))
+                    self.labels['overlay_label'].size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                ))
+            if self.labels.get('overlay_info'):
+                coord = self.controller.get_coord_cfg() if self.controller else {}
+                self.labels['overlay_info'].setText(
+                    f"Overlay offset=({coord.get('offset_x',0):.1f},{coord.get('offset_y',0):.1f}) scale={coord.get('scale','auto')}"
+                )
 
         # Status / plots
         sender_state = "Sender: ON" if self.controller and self.controller.sender_running() else "Sender: OFF"
