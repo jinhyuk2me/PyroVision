@@ -26,12 +26,20 @@ from gui.constants import (
     TIMER_INTERVAL_MS,
     VIDEO_GRID_RGB_ROW,
     VIDEO_GRID_RGB_COL,
+    VIDEO_GRID_RGB_INFO_ROW,
+    VIDEO_GRID_RGB_INFO_COL,
     VIDEO_GRID_DET_ROW,
     VIDEO_GRID_DET_COL,
+    VIDEO_GRID_DET_INFO_ROW,
+    VIDEO_GRID_DET_INFO_COL,
     VIDEO_GRID_IR_ROW,
     VIDEO_GRID_IR_COL,
+    VIDEO_GRID_IR_INFO_ROW,
+    VIDEO_GRID_IR_INFO_COL,
     VIDEO_GRID_OVERLAY_ROW,
     VIDEO_GRID_OVERLAY_COL,
+    VIDEO_GRID_OVERLAY_INFO_ROW,
+    VIDEO_GRID_OVERLAY_INFO_COL,
 )
 
 
@@ -80,14 +88,21 @@ class MainWindow(QMainWindow):
         self.overlay_info = QLabel("-")
 
         grid = QGridLayout()
+        # RGB column (left)
         grid.addWidget(self.rgb_label, VIDEO_GRID_RGB_ROW, VIDEO_GRID_RGB_COL)
+        grid.addWidget(self.rgb_info, VIDEO_GRID_RGB_INFO_ROW, VIDEO_GRID_RGB_INFO_COL)
+
+        # Det column (right)
         grid.addWidget(self.det_label, VIDEO_GRID_DET_ROW, VIDEO_GRID_DET_COL)
+        grid.addWidget(self.det_info, VIDEO_GRID_DET_INFO_ROW, VIDEO_GRID_DET_INFO_COL)
+
+        # IR column (left)
         grid.addWidget(self.ir_label, VIDEO_GRID_IR_ROW, VIDEO_GRID_IR_COL)
+        grid.addWidget(self.ir_info, VIDEO_GRID_IR_INFO_ROW, VIDEO_GRID_IR_INFO_COL)
+
+        # Overlay column (right)
         grid.addWidget(self.overlay_label, VIDEO_GRID_OVERLAY_ROW, VIDEO_GRID_OVERLAY_COL)
-        grid.addWidget(self.rgb_info, 2, 0)
-        grid.addWidget(self.det_info, 2, 1)
-        grid.addWidget(self.ir_info, 3, 0)
-        grid.addWidget(self.overlay_info, 3, 1)
+        grid.addWidget(self.overlay_info, VIDEO_GRID_OVERLAY_INFO_ROW, VIDEO_GRID_OVERLAY_INFO_COL)
         video_widget = QWidget()
         video_widget.setLayout(grid)
 
