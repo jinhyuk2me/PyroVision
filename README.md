@@ -2,6 +2,8 @@
 
 > **Intelligent Fire Detection with Computer Vision**
 
+![sample](https://github.com/Stellar-Moment/PyroVision/blob/refactor/gui-split/asset/fire_detected.gif?raw=true)
+
 듀얼 카메라(RGB/IR) 기반 AI 화재 감지 시스템. RGB는 YOLOv8 TFLite로 화염을 추론하고, IR 열화상 카메라는 hotspot(온도 이상) 감지를 수행하며, 두 결과를 융합(Fusion)하여 정확한 화재 판정을 제공합니다. CLI/GUI/TCP 인터페이스를 통해 다양한 환경에서 활용 가능합니다.
 
 **주요 타겟**: NXP i.MX8M Plus 임베디드 보드
