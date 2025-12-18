@@ -9,7 +9,7 @@ error() { echo "[pc->board][error] $*" >&2; exit 1; }
 
 BOARD_HOST=${BOARD_HOST:-192.168.50.166}
 BOARD_USER=${BOARD_USER:-root}
-BOARD_SCRIPT=${BOARD_SCRIPT:-/root/lk_fire/scripts/board/setup_board_dhcp.sh}
+BOARD_SCRIPT=${BOARD_SCRIPT:-/root/pyro_vision/scripts/board/setup_board_dhcp.sh}
 
 read -rp "Board SSH host [${BOARD_HOST}]: " input_host
 BOARD_HOST=${input_host:-$BOARD_HOST}
@@ -27,6 +27,6 @@ if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "${BOARD_USER}@${BOARD_HOST}" "ech
     warn "Passwordless SSH may not be set. You might be prompted for a password."
 fi
 
-ssh "${BOARD_USER}@${BOARD_HOST}" "cd /root/lk_fire && yes y | bash $BOARD_SCRIPT"
+ssh "${BOARD_USER}@${BOARD_HOST}" "cd /root/pyro_vision && yes y | bash $BOARD_SCRIPT"
 
 log "Done."

@@ -12,9 +12,9 @@ log() { echo "[ir-set] $*"; }
 warn() { echo "[ir-set][warn] $*" >&2; }
 error() { echo "[ir-set][error] $*" >&2; exit 1; }
 
-CONFIG_FILE=${CONFIG_FILE:-/root/lk_fire/configs/config.yaml}
+CONFIG_FILE=${CONFIG_FILE:-/root/pyro_vision/configs/config.yaml}
 BACKUP_FILE="${CONFIG_FILE}.bak"
-SERVICE_NAME=${SERVICE_NAME:-lk_fire.service}
+SERVICE_NAME=${SERVICE_NAME:-pyro_vision.service}
 
 require_root() {
     if [ "$(id -u)" != "0" ]; then

@@ -3,15 +3,15 @@ set -euo pipefail
 
 # Interactive scp sync loop: choose what to sync from PC -> board.
 # Defaults can be overridden via env before running:
-#   DEST     : user@host:/path/ (default: root@192.168.50.166:/root/lk_fire/)
+#   DEST     : user@host:/path/ (default: root@192.168.50.166:/root/pyro_vision/)
 #   INTERVAL : seconds between copies (default: 5)
 #   SCP_OPTS : extra scp options (default: "-p")
 
-DEST=${DEST:-root@192.168.50.166:/root/lk_fire/}
+DEST=${DEST:-root@192.168.50.166:/root/pyro_vision/}
 INTERVAL=${INTERVAL:-5}
 SCP_OPTS=${SCP_OPTS:-"-p"}
 
-ROOT_DIR="/home/yocto/work/lk_fire"
+ROOT_DIR="/home/yocto/work/pyro_vision"
 
 choose_source() {
   echo "Select what to sync:"

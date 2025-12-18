@@ -12,10 +12,10 @@ log() { echo "[model-set] $*"; }
 warn() { echo "[model-set][warn] $*" >&2; }
 error() { echo "[model-set][error] $*" >&2; exit 1; }
 
-CONFIG_FILE=${CONFIG_FILE:-/root/lk_fire/configs/config.yaml}
+CONFIG_FILE=${CONFIG_FILE:-/root/pyro_vision/configs/config.yaml}
 BACKUP_FILE="${CONFIG_FILE}.bak"
-MODEL_ROOT=${MODEL_ROOT:-/root/lk_fire/model}
-SERVICE_NAME=${SERVICE_NAME:-lk_fire.service}
+MODEL_ROOT=${MODEL_ROOT:-/root/pyro_vision/model}
+SERVICE_NAME=${SERVICE_NAME:-pyro_vision.service}
 
 require_root() {
     if [ "$(id -u)" != "0" ]; then

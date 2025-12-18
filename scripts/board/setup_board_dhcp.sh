@@ -11,7 +11,7 @@ fi
 
 set -euo pipefail
 
-ROOT_DIR=${ROOT_DIR:-/root/lk_fire}
+ROOT_DIR=${ROOT_DIR:-/root/pyro_vision}
 NETWORK_FILE="/etc/systemd/network/10-eth0-static.network"
 BACKUP_FILE="/etc/systemd/network/10-eth0-static.network.backup"
 
@@ -200,8 +200,8 @@ main() {
         log "  Backup file: $BACKUP_FILE"
     fi
     echo ""
-    log "Next on PC: run sudo /root/lk_fire/scripts/pc/setup_pc_wired_gateway.sh"
-    log "  sudo /root/lk_fire/scripts/pc/setup_pc_wired_gateway.sh"
+    log "Next on PC: run sudo /root/pyro_vision/scripts/pc/setup_pc_wired_gateway.sh"
+    log "  sudo /root/pyro_vision/scripts/pc/setup_pc_wired_gateway.sh"
     echo ""
 }
 

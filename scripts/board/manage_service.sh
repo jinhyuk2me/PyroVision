@@ -18,7 +18,7 @@ require_root() {
     fi
 }
 
-SERVICE_NAME=${SERVICE_NAME:-lk_fire.service}
+SERVICE_NAME=${SERVICE_NAME:-pyro_vision.service}
 
 main() {
     require_root

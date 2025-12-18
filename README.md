@@ -1,4 +1,4 @@
-# EOIR Fire Detector
+# PyroVision
 
 NXP i.MX8M Plus 환경을 우선 대상으로 하는 듀얼 카메라 화재 감지 파이프라인입니다. RGB(객체 탐지)와 IR(화점 탐지)을 동시에 처리하고, TCP로 전송하거나 GUI에서 모니터링/제어할 수 있습니다.
 
@@ -129,8 +129,8 @@ RGB_DEVICE=/dev/video5 python3 app.py
 - 기본: `configs/config.yaml` (고해상도/민감 설정)
 - 보수: `configs/config_prod.yaml` (낮은 해상도/높은 IR 임계)
 - PC: `configs/config_pc.yaml`
-- 핵심 키: `CAMERA.*.DEVICE`(udev 링크 `/dev/lk_rgb_cam`, `/dev/lk_ir_cam` 사용), `MODEL`/`LABEL`/`DELEGATE` 경로, `TARGET_RES`, `SERVER.IP/PORT`, `DISPLAY.ENABLED`.
-- 장치 링크는 `scripts/board/setup_lk_fire.sh`로 생성/갱신됩니다. 필요 시 `CONFIG_PATH`로 다른 프로파일을 지정하세요.
+- 핵심 키: `CAMERA.*.DEVICE`(udev 링크 `/dev/pyro_rgb_cam`, `/dev/pyro_ir_cam` 사용), `MODEL`/`LABEL`/`DELEGATE` 경로, `TARGET_RES`, `SERVER.IP/PORT`, `DISPLAY.ENABLED`.
+- 장치 링크는 `scripts/board/setup_pyro_vision.sh`로 생성/갱신됩니다. 필요 시 `CONFIG_PATH`로 다른 프로파일을 지정하세요.
 
 ## CLI 키보드 제어
 
@@ -277,20 +277,20 @@ DELEGATE: ""    # 빈 문자열 또는 주석 처리
 ```
 
 ## 보드 자동 설정 및 서비스 등록
-- 스크립트: `scripts/board/setup_lk_fire.sh` (root 권한 필요)
+- 스크립트: `scripts/board/setup_pyro_vision.sh` (root 권한 필요)
 - 수행 내용:
   1) V4L2 장치 스캔 → PureThermal IR(index0)/RGB(VIV 등) 자동 감지  
-  2) udev 규칙 생성: `/dev/lk_ir_cam`, `/dev/lk_rgb_cam` 심볼릭 링크 부여  
+  2) udev 규칙 생성: `/dev/pyro_ir_cam`, `/dev/pyro_rgb_cam` 심볼릭 링크 부여  
   3) `configs/config.yaml`의 `CAMERA.IR/RGB_FRONT.DEVICE`를 위 링크로 갱신  
-  4) `lk_fire.service`를 `/etc/systemd/system`에 설치하고 enable+start
+  4) `pyro_vision.service`를 `/etc/systemd/system`에 설치하고 enable+start
 - 실행:
 ```bash
-sudo bash scripts/board/setup_lk_fire.sh
-sudo systemctl status lk_fire.service
+sudo bash scripts/board/setup_pyro_vision.sh
+sudo systemctl status pyro_vision.service
 ```
 - 검증 팁:
-  - 장치/링크: `v4l2-ctl --list-devices`, `ls -l /dev/lk_*`
-  - 로그: `journalctl -u lk_fire.service -n 50 --no-pager`
+  - 장치/링크: `v4l2-ctl --list-devices`, `ls -l /dev/pyro_*`
+  - 로그: `journalctl -u pyro_vision.service -n 50 --no-pager`
 
 ## 자주 겪는 문제
 
@@ -328,7 +328,7 @@ sudo systemctl status lk_fire.service
 ## 리포지토리 구조
 
 ```
-lk_fire/
+pyro_vision/
 ├── app.py                  # 메인 엔트리 포인트
 ├── capture.py              # 캡처 스크립트
 ├── receiver.py             # TCP 수신 서버
@@ -359,4 +359,4 @@ lk_fire/
 
 ## 라이센스
 
-(라이센스 정보 추가 예정)
+Copyright (c) 2025 MomentLab. All Rights Reserved.

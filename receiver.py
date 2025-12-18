@@ -242,7 +242,7 @@ def receive_and_display(host="0.0.0.0", port=9999):
         receiver.close()
         return
 
-    cv2.namedWindow("LK ROBOTICS Inc.", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("PyroVision", cv2.WINDOW_AUTOSIZE)
 
     frame_count = 0
     start_time = time.time()
@@ -340,7 +340,7 @@ def receive_and_display(host="0.0.0.0", port=9999):
                         combined = np.vstack([rgb_crop, ir_crop])
                 else:
                     combined = rgb_det_display
-                cv2.imshow("LK ROBOTICS Inc.", combined)
+                cv2.imshow("PyroVision", combined)
             elif ir_display is not None:
                 ir_display = _rotate_frame(ir_display, ir_rot)
                 if abs(ir_scale - 1.0) > 1e-3:
@@ -348,7 +348,7 @@ def receive_and_display(host="0.0.0.0", port=9999):
                     new_h = max(1, int(ir_display.shape[0] * ir_scale))
                     ir_display = cv2.resize(ir_display, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
                 ir_display = _draw_max_temp_text(ir_display, ir_entry)
-                cv2.imshow("LK ROBOTICS Inc.", ir_display)
+                cv2.imshow("PyroVision", ir_display)
             t_display_end = time.perf_counter()
             display_times.append((t_display_end - t_display_start) * 1000)
 

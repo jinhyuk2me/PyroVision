@@ -36,14 +36,14 @@ main() {
 
     cat <<EOF
 ==========================
-  LK Fire Board Menu
+  PyroVision Board Menu
 ==========================
 1) Setup eth0 DHCP                (setup_board_dhcp.sh)
 2) Set SERVER.IP + restart svc    (set_server_ip.sh)
 3) Select MODEL/LABEL             (set_model_path.sh)
-4) Manage lk_fire.service         (manage_service.sh)
+4) Manage pyro_vision.service         (manage_service.sh)
 5) Switch wired/wifi interfaces   (switch_network_interface.sh)
-6) Initial board setup            (setup_lk_fire.sh)
+6) Initial board setup            (setup_pyro_vision.sh)
 7) Set resolutions (IR/RGB/TARGET) (set_resolution.sh)
 8) Set IR TAU / FIRE_MIN_TEMP     (set_ir_params.sh)
 q) Quit
@@ -56,7 +56,7 @@ EOF
         3) run_script "$SCRIPT_DIR/set_model_path.sh" ;;
         4) run_script "$SCRIPT_DIR/manage_service.sh" ;;
         5) run_script "$SCRIPT_DIR/switch_network_interface.sh" ;;
-        6) run_script "$SCRIPT_DIR/setup_lk_fire.sh" ;;
+        6) run_script "$SCRIPT_DIR/setup_pyro_vision.sh" ;;
         7) run_script "$SCRIPT_DIR/set_resolution.sh" ;;
         8) run_script "$SCRIPT_DIR/set_ir_params.sh" ;;
         q|Q) log "Bye."; exit 0 ;;

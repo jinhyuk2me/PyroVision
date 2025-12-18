@@ -1,6 +1,6 @@
 # Scripts
 
-PC/보드용 유틸리티 스크립트 모음. 기본 경로: `/root/lk_fire/scripts`.
+PC/보드용 유틸리티 스크립트 모음. 기본 경로: `/root/pyro_vision/scripts`.
 
 ## 디렉토리
 - `pc/`: PC용 (인터넷 공유, 파일 동기화, 원격 DHCP 실행)
@@ -9,8 +9,8 @@ PC/보드용 유틸리티 스크립트 모음. 기본 경로: `/root/lk_fire/scr
 ## 빠른 실행 흐름
 1) PC: 유선 게이트웨이/DHCP 시작 → `sudo ./pc/setup_pc_wired_gateway.sh` (MAC 자동 감지 `auto` 지원)  
 2) 보드: DHCP 전환 → `sudo ./board/setup_board_dhcp.sh` (또는 PC에서 `bash ./pc/run_board_dhcp_over_ssh.sh`)  
-3) 보드: 장치/udev/서비스 설정 → `sudo ./board/setup_lk_fire.sh`  
-4) 필요 시 서버 IP 전환 → `sudo ./board/set_server_ip.sh` (끝나면 `lk_fire.service` 재시작 여부 질문)
+3) 보드: 장치/udev/서비스 설정 → `sudo ./board/setup_pyro_vision.sh`  
+4) 필요 시 서버 IP 전환 → `sudo ./board/set_server_ip.sh` (끝나면 `pyro_vision.service` 재시작 여부 질문)
 
 ## PC 스크립트
 - `setup_pc_wired_gateway.sh`: PC를 공유기처럼 설정(NAT, dnsmasq). 인터페이스 선행 선택, MAC/IP 입력으로 고정 예약 생성, `auto` 입력 시 tcpdump 기반 MAC 자동 감지.
@@ -22,14 +22,14 @@ PC/보드용 유틸리티 스크립트 모음. 기본 경로: `/root/lk_fire/scr
 ## 보드 스크립트
 - `setup_board_dhcp.sh`: eth0 DHCP 설정, systemd-networkd/resolved enable, 재시작 및 연결 테스트.
 - `setup_board_wifi.sh`: Wi‑Fi 스캔/선택/접속. `SCAN_LIMIT`(기본 30, 0이면 무제한)으로 목록 제한. ctrl_interface 그룹/소켓 자동 설정, 필요 시 wpa_supplicant 기동.
-- `setup_lk_fire.sh`: 카메라 자동 감지(PureThermal 이름 매칭 포함), udev 규칙 생성 후 settle/링크 대기, config DEVICE 갱신, `lk_fire.service` 설치/시작.
+- `setup_pyro_vision.sh`: 카메라 자동 감지(PureThermal 이름 매칭 포함), udev 규칙 생성 후 settle/링크 대기, config DEVICE 갱신, `pyro_vision.service` 설치/시작.
 - `set_server_ip.sh`: `configs/config.yaml`의 `SERVER.IP`를 유선/무선/커스텀으로 변경 후 서비스 재시작 선택.
-- `manage_service.sh`: 기본 대상 `lk_fire.service` start/stop/restart/status.
+- `manage_service.sh`: 기본 대상 `pyro_vision.service` start/stop/restart/status.
 - `switch_network_interface.sh`: eth0/mlan0 업/다운 조합 선택(유선만/무선만/둘다).
 
 ## 사용 팁
 - Receiver 키맵: `1`(IR 90° 회전), `4`(RGB 90° 회전), `0`(회전 리셋), `[` `]` `{` `}` 등으로 스케일 조정.
-- 셋업 후 카메라 링크 확인: `/dev/lk_rgb_cam`, `/dev/lk_ir_cam` 존재/심볼릭 확인.
+- 셋업 후 카메라 링크 확인: `/dev/pyro_rgb_cam`, `/dev/pyro_ir_cam` 존재/심볼릭 확인.
 
 ## 요구사항/권한
 - 대부분 root 필요: `sudo`로 실행.

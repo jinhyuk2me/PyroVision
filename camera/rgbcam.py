@@ -275,6 +275,6 @@ class RGBCamera(FrameSource):
 
 class FrontRGBCamera(RGBCamera):
     def _get_device(self):
-        for dev in ("/dev/lk_rgb_cam", "/dev/video5", "/dev/video3"):
+        for dev in ("/dev/pyro_rgb_cam", "/dev/video5", "/dev/video3"):
             if os.path.exists(dev):
                 return dev

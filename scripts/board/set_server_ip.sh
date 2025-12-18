@@ -12,11 +12,11 @@ log() { echo "[server-ip] $*"; }
 warn() { echo "[server-ip][warn] $*" >&2; }
 error() { echo "[server-ip][error] $*" >&2; exit 1; }
 
-CONFIG_FILE=${CONFIG_FILE:-/root/lk_fire/configs/config.yaml}
+CONFIG_FILE=${CONFIG_FILE:-/root/pyro_vision/configs/config.yaml}
 BACKUP_FILE="${CONFIG_FILE}.bak"
 WIRED_IP_DEFAULT="192.168.200.1"
 WIFI_IP_DEFAULT="192.168.50.178"
-SERVICE_NAME=${SERVICE_NAME:-lk_fire.service}
+SERVICE_NAME=${SERVICE_NAME:-pyro_vision.service}
 
 require_root() {
     if [ "$(id -u)" != "0" ]; then

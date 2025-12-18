@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# LK Fire 보드 자동 설정 스크립트
-# - udev 심볼릭 링크 생성(lk_rgb_cam, lk_ir_cam)
+# PyroVision 보드 자동 설정 스크립트
+# - udev 심볼릭 링크 생성(pyro_rgb_cam, pyro_ir_cam)
 # - configs/config.yaml의 DEVICE를 링크로 갱신
 # - systemd 서비스 설치/기동
 
 set -euo pipefail
 
-ROOT_DIR=${ROOT_DIR:-/root/lk_fire}
+ROOT_DIR=${ROOT_DIR:-/root/pyro_vision}
 CONFIG_FILE="${CONFIG_FILE:-${ROOT_DIR}/configs/config.yaml}"
-UDEV_RULE=/etc/udev/rules.d/99-lk-fire-camera.rules
-SERVICE_FILE=/etc/systemd/system/lk_fire.service
+UDEV_RULE=/etc/udev/rules.d/99-pyro-vision-camera.rules
+SERVICE_FILE=/etc/systemd/system/pyro_vision.service
 
 log() { echo "[setup] $*"; }
 warn() { echo "[setup][warn] $*" >&2; }
@@ -81,11 +81,11 @@ detect_rgb_device() {
 
 write_udev_rules() {
     cat > "$UDEV_RULE" <<EOF
-# LK Fire camera stable symlinks
+# PyroVision camera stable symlinks
 # IR: PureThermal USB (1e4e:0100)
-SUBSYSTEM=="video4linux", ATTRS{idVendor}=="1e4e", ATTRS{idProduct}=="0100", SYMLINK+="lk_ir_cam"
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="1e4e", ATTRS{idProduct}=="0100", SYMLINK+="pyro_ir_cam"
 # RGB: Vivante vvcam-video (name=viv_v4l20)
-SUBSYSTEM=="video4linux", ATTR{name}=="viv_v4l20", SYMLINK+="lk_rgb_cam"
+SUBSYSTEM=="video4linux", ATTR{name}=="viv_v4l20", SYMLINK+="pyro_rgb_cam"
 EOF
     log "udev 규칙 작성 완료: $UDEV_RULE"
     udevadm control --reload-rules
@@ -129,23 +129,23 @@ for line in lines:
         sub = None
 
     if sub == 'IR' and re.match(r'^\s{4}DEVICE:', line):
-        out.append('    DEVICE: "/dev/lk_ir_cam"')
+        out.append('    DEVICE: "/dev/pyro_ir_cam"')
         continue
     if sub == 'RGB_FRONT' and re.match(r'^\s{4}DEVICE:', line):
-        out.append('    DEVICE: "/dev/lk_rgb_cam"')
+        out.append('    DEVICE: "/dev/pyro_rgb_cam"')
         continue
     out.append(line)
 
 with open(path, 'w', encoding='utf-8') as f:
     f.write('\n'.join(out) + '\n')
 PY
-    log "config DEVICE를 /dev/lk_ir_cam, /dev/lk_rgb_cam으로 갱신: $cfg"
+    log "config DEVICE를 /dev/pyro_ir_cam, /dev/pyro_rgb_cam으로 갱신: $cfg"
 }
 
 install_service() {
     cat > "$SERVICE_FILE" <<EOF
 [Unit]
-Description=LK Fire app
+Description=PyroVision app
 After=network.target
 
 [Service]
@@ -163,7 +163,7 @@ WantedBy=multi-user.target
 EOF
     log "systemd 서비스 작성 완료: $SERVICE_FILE"
     systemctl daemon-reload
-    systemctl enable --now lk_fire.service
+    systemctl enable --now pyro_vision.service
     log "서비스가 활성화 및 기동되었습니다."
 }
 
@@ -187,8 +187,8 @@ main() {
     write_udev_rules
 
     # udev 적용 후 링크 확인
-    if wait_symlink /dev/lk_rgb_cam && wait_symlink /dev/lk_ir_cam; then
-        log "심볼릭 링크 확인 완료: /dev/lk_rgb_cam -> $(readlink /dev/lk_rgb_cam), /dev/lk_ir_cam -> $(readlink /dev/lk_ir_cam)"
+    if wait_symlink /dev/pyro_rgb_cam && wait_symlink /dev/pyro_ir_cam; then
+        log "심볼릭 링크 확인 완료: /dev/pyro_rgb_cam -> $(readlink /dev/pyro_rgb_cam), /dev/pyro_ir_cam -> $(readlink /dev/pyro_ir_cam)"
     else
         warn "심볼릭 링크가 생성되지 않았습니다. 장치 연결과 udev 규칙을 확인하세요."
     fi
@@ -196,7 +196,7 @@ main() {
     ensure_config_devices "$CONFIG_FILE"
     install_service
 
-    log "설정 완료. 상태 확인: systemctl status lk_fire.service"
+    log "설정 완료. 상태 확인: systemctl status pyro_vision.service"
 }
 
 main "$@"
