@@ -128,9 +128,15 @@ choose_interface() {
 
 auto_detect_mac() {
     local ifname="$1"
-    local timeout_sec="${2:-10}"
+    local timeout_sec="${2:-20}"
+    local capture_count="${3:-50}"
 
     ip link set "$ifname" up >/dev/null 2>&1 || true
+
+    # 링크가 내려가 있으면 미리 알려준다.
+    if [[ -f "/sys/class/net/${ifname}/carrier" ]] && [[ "$(cat "/sys/class/net/${ifname}/carrier" 2>/dev/null)" != "1" ]]; then
+        warn "${ifname} 링크가 DOWN 상태입니다. 케이블/전원을 확인하세요."
+    fi
 
     # 먼저 ARP/네이버 캐시에 있는 MAC 시도
     local cached_mac
@@ -151,7 +157,7 @@ auto_detect_mac() {
 
     warn "MAC 자동 감지를 위해 ${timeout_sec}초 동안 ${ifname} 트래픽을 듣습니다. (보드를 켜거나 케이블을 재연결하세요)"
     local capture_output
-    capture_output=$(timeout "$timeout_sec" tcpdump -len -c 3 -i "$ifname" '(arp or (udp and (port 67 or 68)))' 2>/dev/null || true)
+    capture_output=$(timeout "$timeout_sec" tcpdump -len -c "$capture_count" -i "$ifname" '(arp or (udp and (port 67 or 68)) or ether broadcast)' 2>/dev/null || true)
     if [[ -z "$capture_output" ]]; then
         return 1
     fi
@@ -170,6 +176,9 @@ auto_detect_mac() {
         echo "$mac"
         return 0
     fi
+
+    warn "감지된 트래픽은 있었지만 MAC을 읽지 못했습니다. (아래는 첫 몇 줄)"
+    echo "$capture_output" | head -n 5 >&2
 
     return 1
 }
@@ -367,7 +376,7 @@ main() {
             read -rp "$prompt_mac" input_mac
             if [[ "$input_mac" == "auto" ]]; then
                 local detected_mac
-                detected_mac=$(auto_detect_mac "$WIRED_IF" 12 || true)
+                detected_mac=$(auto_detect_mac "$WIRED_IF" 20 || true)
                 if [[ -n "$detected_mac" ]]; then
                     log "자동 감지 성공: ${detected_mac}"
                     input_mac="$detected_mac"
