@@ -1,9 +1,6 @@
 <div align="center">
   <img src="asset/pyro_banner.png" width="100%">
 </div>
-<br>
-
-> **NXP i.MX8M Plus 기반 듀얼 카메라(RGB + IR) 화재 감지 및 제어 솔루션**
 
 ## 1. 실행 예시 (Demo)
 <div align="center">
